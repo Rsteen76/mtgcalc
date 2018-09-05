@@ -1,17 +1,20 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <mtg-calc></mtg-calc>
+    
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import VueSlideBar from './components/VueSlideBar.vue'
+import MtgCalc from './components/MtgCalc.vue'
+
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    MtgCalc,
+    VueSlideBar,
   }
 }
 </script>
