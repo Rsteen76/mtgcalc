@@ -7,21 +7,21 @@
       <div class="input-group-prepend">
         <button v-on:click="subtractValue" class="btn btn-outline-secondary">-</button>
       </div>
-      <input type="text" class="form-control" id="houseValue" v-model='formattedValue'>
+      <input type="text" class="form-control" id="houseValue" v-model='formattedValue' value= formattedValue>
       <!-- Add to sliderValue -->
       <div class="input-group-append">
         <button v-on:click="addValue" class="btn btn-outline-secondary">+</button>
       </div>
     </div>
       <!-- Slider -->
-      <input type="range" :min="min" :max="max" step="1000" v-model="sliderValue" class="slider" id="myRange">
+      <input type="range" :min="min" :max="max" :step="step" v-model="sliderValue" class="slider" id="myRange">
   </div>
 </template>
 
 <script>
 
   export default { 
-    props: ['label', 'min', 'max'],
+    props: ['label', 'min', 'max', 'step'],
     data: function() {
       return {
       sliderValue: this.min,
@@ -31,11 +31,17 @@
     },
     watch:{
       sliderValue: function() {
-        this.formattedValue =  "$" + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3,8);
+        if (this.sliderValue>100000) {
+          this.formattedValue =  "$" + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3,8);
+        } else {
+          this.formattedValue = this.sliderValue;
+        }
         this.$emit('sliderChanged', this.sliderValue);
       },
       formattedValue: function() {
-        return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g,'');
+        if (this.sliderValue>100000) {
+          return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g,'');
+        } 
       }
     },
     methods:{
