@@ -3,7 +3,7 @@
     <h1>Mortgage Calculator</h1>
     <div class="row">
       <!-- Loan Selection -->
-      <div class="col-md-12 mx-auto mb-3 mt-3">
+      <div class="col-auto mx-auto mb-3 mt-3">
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="conventional" name="loanType" class="custom-control-input">
           <label class="custom-control-label" for="conventional">Conventional</label>
@@ -39,7 +39,7 @@
       <!-- If dollar amount for down payment is picked -->
       <template v-if="picked==='dollar'">
       <div class="col-md-12">
-        <VueSlideBar min="0" max="999999" step="1000" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
+        <VueSlideBar min="0" :max=purchasePrice step="1000" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
       </div>
       </template>
       <!-- If a percentage for dollar amount is picked -->
@@ -48,9 +48,13 @@
         <VueSlideBar min="0" max="100" step="1" increment="1" label='Percent Down' @sliderChanged="downPercent = $event" key="percent-input" />
       </div>
       </template>
+      <!-- Select Interest Rate -->
       <div class="col-md-12">
-        <h2>Loan Amount {{loanAmount}}</h2>
-        <h2>Payment {{payment}}</h2>
+        <VueSlideBar min="1" max="10" step=".125" increment="0.125" label='Interest Rate' @sliderChanged="interestRate = $event" />
+      </div>
+      <div class="col-md-12">
+        <h2>Loan Amount ${{loanAmount}}</h2>
+        <h2>Payment ${{payment}}</h2>
       </div>
     </div>
   </div>
@@ -66,8 +70,7 @@
         downPayment: '',
         downPercent: '',
         picked: 'dollar',
-        P: 400000, //principle / initial amount borrowed
-        I: 3.5 / 100 / 12, //monthly interest rate
+        interestRate: '1',
         N: 30 * 12, //number of payments months
       }
     },
@@ -75,7 +78,13 @@
     components: {
       VueSlideBar
     },
+    
     computed: {
+      // Calculate monthly interest amount
+      I: function() {
+        return parseFloat(this.interestRate) / 100 / 12; 
+      },
+      // Calculate Loan Amount
       loanAmount: function() {
         if (this.picked==="percent") {
           return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
@@ -83,6 +92,7 @@
           return this.purchasePrice-this.downPayment;
         }
       },
+      // Calculate Payment Amount
       payment: function() {
         return (this.loanAmount * this.I * (Math.pow(1 + this.I, this.N)) / (Math.pow(1 + this.I, this.N) - 1)).toFixed(2);
       }
@@ -92,5 +102,19 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  h1 {
+    font-size: 30px;
+  }
 
+  @media (min-width:600px) {
+    h1 {
+      font-size: 30px;
+    }
+  }
+
+  @media(min-width:800px) {
+    h1 {
+      font-size: 45px;
+    }
+  }
 </style>

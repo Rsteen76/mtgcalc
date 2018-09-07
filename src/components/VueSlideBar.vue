@@ -41,18 +41,18 @@
       },
       formattedValue: function() {
         // Prevent format changes when greater than 100
-        if (this.sliderValue>100) {
+        if (this.sliderValue>999) {
           return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g,'');
         } 
       }
     },
     methods:{
       addValue: function(){
-        return this.sliderValue = (parseInt(this.sliderValue) + parseInt(this.increment)).toString();
+        return this.sliderValue = (parseFloat(this.sliderValue) + parseFloat(this.increment)).toString();
       },
 
       subtractValue: function(){
-        return this.sliderValue = (parseInt(this.sliderValue) - parseInt(this.increment)).toString();
+        return this.sliderValue = (parseFloat(this.sliderValue) - parseFloat(this.increment)).toString();
       }
     }
   }
