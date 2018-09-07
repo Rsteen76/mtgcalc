@@ -23,7 +23,6 @@
       </div>
       <!-- Purchase Price -->
       <div class="col-md-12">
-
         <VueSlideBar min="100000" max="999999" step="1000" increment="1000" label='Purchase Price' @sliderChanged="purchasePrice = $event" />
       </div>
       <!-- Down Payment Amount, Select whether dollar amount or percentage -->
@@ -41,16 +40,18 @@
       <template v-if="picked==='dollar'">
       <div class="col-md-12">
         <VueSlideBar min="0" max="999999" step="1000" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
-        <h1>Loan Amount {{purchasePrice - downPayment}}</h1>
       </div>
       </template>
       <!-- If a percentage for dollar amount is picked -->
       <template v-else-if="picked==='percent'" >
       <div class="col-md-12">
         <VueSlideBar min="0" max="100" step="1" increment="1" label='Percent Down' @sliderChanged="downPercent = $event" key="percent-input" />
-        <h1>Loan Amount {{loanAmount}}</h1>
       </div>
       </template>
+      <div class="col-md-12">
+        <h2>Loan Amount {{loanAmount}}</h2>
+        <h2>Payment {{payment}}</h2>
+      </div>
     </div>
   </div>
 </template>
@@ -64,7 +65,10 @@
         purchasePrice: '100000',
         downPayment: '',
         downPercent: '',
-        picked: 'dollar'
+        picked: 'dollar',
+        P: 400000, //principle / initial amount borrowed
+        I: 3.5 / 100 / 12, //monthly interest rate
+        N: 30 * 12, //number of payments months
       }
     },
 
@@ -73,7 +77,14 @@
     },
     computed: {
       loanAmount: function() {
-        return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
+        if (this.picked==="percent") {
+          return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
+        } else if(this.picked==="dollar") {
+          return this.purchasePrice-this.downPayment;
+        }
+      },
+      payment: function() {
+        return (this.loanAmount * this.I * (Math.pow(1 + this.I, this.N)) / (Math.pow(1 + this.I, this.N) - 1)).toFixed(2);
       }
     }
   }
