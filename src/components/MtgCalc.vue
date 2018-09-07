@@ -39,7 +39,7 @@
       <!-- If dollar amount for down payment is picked -->
       <template v-if="picked==='dollar'">
       <div class="col-md-12">
-        <VueSlideBar min="0" :max=purchasePrice step="1000" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
+        <VueSlideBar min="0" :max=purchasePrice step="500" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
       </div>
       </template>
       <!-- If a percentage for dollar amount is picked -->
@@ -89,12 +89,12 @@
         if (this.picked==="percent") {
           return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
         } else if(this.picked==="dollar") {
-          return this.purchasePrice-this.downPayment;
+          return ((this.purchasePrice-this.downPayment).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         }
       },
       // Calculate Payment Amount
       payment: function() {
-        return (this.loanAmount * this.I * (Math.pow(1 + this.I, this.N)) / (Math.pow(1 + this.I, this.N) - 1)).toFixed(2);
+        return (parseFloat((this.loanAmount.replace(/[^a-zA-Z0-9]/g, ''))) * this.I * (Math.pow(1 + this.I, this.N) / (Math.pow(1 + this.I, this.N) - 1))).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
     }
   }

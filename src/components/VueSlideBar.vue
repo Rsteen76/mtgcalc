@@ -20,44 +20,48 @@
 
 <script>
 
-  export default { 
+  export default {
     props: ['label', 'min', 'max', 'step', 'increment'],
-    data: function() {
+    data: function () {
       return {
-      sliderValue: this.min,
-      inputValue: this.min,
-      formattedValue: this.min
-    }
+        sliderValue: this.min,
+        // inputValue: this.min,
+        formattedValue: "$" + this.min
+      }
     },
-    watch:{
-      sliderValue: function() {
+    watch: {
+      sliderValue: function () {
         // Don't format number if under 100
-        if (this.sliderValue>100) {
-          this.formattedValue =  "$" + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3,8);
+        
+        if (this.sliderValue > 99999) {
+          this.formattedValue = "$" + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3, 6);
+        } else if (this.sliderValue > 9999 && this.sliderValue < 99999) {
+          this.formattedValue = "$" + this.sliderValue.slice(0, 2) + "," + this.sliderValue.slice(2, 5);
+        } else if (this.sliderValue > 999 && this.sliderValue < 9999 ) {
+          this.formattedValue = "$" + this.sliderValue.slice(0, 1) + "," + this.sliderValue.slice(1, 4);
         } else {
           this.formattedValue = this.sliderValue;
         }
+        // this.formattedValue = "$" + this.sliderValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         this.$emit('sliderChanged', this.sliderValue);
       },
-      formattedValue: function() {
+      formattedValue: function () {
         // Prevent format changes when greater than 100
-        if (this.sliderValue>999) {
-          return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g,'');
-        } 
+        if (this.sliderValue > 999) {
+          return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g, '');
+        }
       }
     },
-    methods:{
-      addValue: function(){
+    methods: {
+      addValue: function () {
         return this.sliderValue = (parseFloat(this.sliderValue) + parseFloat(this.increment)).toString();
       },
 
-      subtractValue: function(){
+      subtractValue: function () {
         return this.sliderValue = (parseFloat(this.sliderValue) - parseFloat(this.increment)).toString();
       }
     }
   }
-  
-    
 </script>
 
 <style>
