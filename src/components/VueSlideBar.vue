@@ -7,7 +7,7 @@
       <div class="input-group-prepend">
         <button v-on:click="subtractValue" class="btn btn-outline-secondary">-</button>
       </div>
-      <input type="text" class="form-control" id="houseValue" v-model='formattedValue' value= formattedValue>
+      <input type="text" class="form-control" id="houseValue" v-model='formattedValue'>
       <!-- Add to sliderValue -->
       <div class="input-group-append">
         <button v-on:click="addValue" class="btn btn-outline-secondary">+</button>
@@ -21,7 +21,7 @@
 <script>
 
   export default { 
-    props: ['label', 'min', 'max', 'step'],
+    props: ['label', 'min', 'max', 'step', 'increment'],
     data: function() {
       return {
       sliderValue: this.min,
@@ -31,7 +31,8 @@
     },
     watch:{
       sliderValue: function() {
-        if (this.sliderValue>100000) {
+        // Don't format number if under 100
+        if (this.sliderValue>100) {
           this.formattedValue =  "$" + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3,8);
         } else {
           this.formattedValue = this.sliderValue;
@@ -39,18 +40,19 @@
         this.$emit('sliderChanged', this.sliderValue);
       },
       formattedValue: function() {
-        if (this.sliderValue>100000) {
+        // Prevent format changes when greater than 100
+        if (this.sliderValue>100) {
           return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g,'');
         } 
       }
     },
     methods:{
       addValue: function(){
-        return this.sliderValue = (parseInt(this.sliderValue) + 500).toString();
+        return this.sliderValue = (parseInt(this.sliderValue) + parseInt(this.increment)).toString();
       },
 
       subtractValue: function(){
-        return this.sliderValue = (parseInt(this.sliderValue) - 500).toString();
+        return this.sliderValue = (parseInt(this.sliderValue) - parseInt(this.increment)).toString();
       }
     }
   }
@@ -68,7 +70,7 @@
   .slider {
       -webkit-appearance: none;  /*Override default CSS styles */
       width: 80%;
-      height: 40px; /* Specified height */
+      height: 20px; /* Specified height */
       background: #d3d3d3; /* Grey background */
       outline: none;
       border-style: solid;

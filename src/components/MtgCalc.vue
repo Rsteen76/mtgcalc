@@ -23,7 +23,7 @@
       </div>
       <!-- Purchase Price -->
       <div class="col-md-12">
-        <VueSlideBar min="100000" max="999999" step="1000" label='Purchase Price' @sliderChanged="purchasePrice = $event" />
+        <VueSlideBar min="100000" max="999999" step="1000" increment="1000" label='Purchase Price' @sliderChanged="purchasePrice = $event" />
       </div>
       <!-- Down Payment Amount, Select whether dollar amount or percentage -->
       <div class="col-md-12 mx-auto mb-3">
@@ -39,15 +39,15 @@
       <!-- If dollar amount for down payment is picked -->
       <template v-if="picked==='dollar'">
       <div class="col-md-12">
-        <VueSlideBar min="0" max="999999" step="1000" label='Down Payment Amount' @sliderChanged="downPayment = $event" />
+        <VueSlideBar min="0" max="999999" step="1000" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" />
         <h1>Loan Amount {{purchasePrice - downPayment}}</h1>
       </div>
       </template>
       <!-- If a percentage for dollar amount is picked -->
       <template v-if="picked==='percent'">
       <div class="col-md-12">
-        <VueSlideBar min="0" max="100" step="1" label='Percent Down' @sliderChanged="downPercent = $event" />
-        <h1>Loan Amount {{purchasePrice-(purchasePrice * downPercent*.01)}}</h1>
+        <VueSlideBar min="0" max="100" step="1" increment="1" label='Percent Down' @sliderChanged="downPercent = $event" />
+        <h1>Loan Amount {{loanAmount}}</h1>
       </div>
       </template>
     </div>
@@ -60,15 +60,20 @@
   export default {
     data: function () {
       return {
-        purchasePrice: '',
+        purchasePrice: '100000',
         downPayment: '',
         downPercent: '',
-        picked: ''
+        picked: 'dollar'
       }
     },
 
     components: {
       VueSlideBar
+    },
+    computed: {
+      loanAmount: function() {
+        return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
+      }
     }
   }
 </script>
