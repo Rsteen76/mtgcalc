@@ -23,7 +23,7 @@
       </div>
       <!-- Purchase Price -->
       <div class="col-md-12">
-        <VueSlideBar min="100000" max="999999" step="1000" increment="1000" label='Purchase Price' @sliderChanged="purchasePrice = $event" />
+        <VueSlideBar min="100000" max="999999" step="1000" increment="1000" label='Purchase Price' format='$' @sliderChanged="purchasePrice = $event" />
       </div>
       <!-- Down Payment Amount, Select whether dollar amount or percentage -->
       <div class="col-md-12 mx-auto mb-3">
@@ -37,20 +37,20 @@
         </div>
       </div>
       <!-- If dollar amount for down payment is picked -->
-      <template v-if="picked==='dollar'">
+      <template v-if="picked === 'dollar'">
       <div class="col-md-12">
-        <VueSlideBar min="0" :max=purchasePrice step="500" increment="500" label='Down Payment Amount' @sliderChanged="downPayment = $event" key="dollar-input"/>
+        <VueSlideBar min="0" :max=purchasePrice step="500" increment="500" label='Down Payment Amount' format='$' @sliderChanged="downPayment = $event" key="dollar-input"/>
       </div>
       </template>
       <!-- If a percentage for dollar amount is picked -->
       <template v-else-if="picked==='percent'" >
       <div class="col-md-12">
-        <VueSlideBar min="0" max="100" step="1" increment="1" label='Percent Down' @sliderChanged="downPercent = $event" key="percent-input" />
+        <VueSlideBar min="0" max="100" step="1" increment="1" label='Percent Down' @sliderChanged="downPercent = $event" format='%' key="percent-input" />
       </div>
       </template>
       <!-- Select Interest Rate -->
       <div class="col-md-12">
-        <VueSlideBar min="1" max="10" step=".125" increment="0.125" label='Interest Rate' @sliderChanged="interestRate = $event" />
+        <VueSlideBar min="1" max="10" step=".125" increment="0.125" label='Interest Rate' format="%" @sliderChanged="interestRate = $event" />
       </div>
       <div class="col-md-12">
         <h2>Loan Amount ${{loanAmount}}</h2>
@@ -89,12 +89,12 @@
         if (this.picked==="percent") {
           return this.purchasePrice-(this.purchasePrice * this.downPercent*.01);
         } else if(this.picked==="dollar") {
-          return ((this.purchasePrice-this.downPayment).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+          return (((this.purchasePrice-this.downPayment).toString()).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         }
       },
       // Calculate Payment Amount
       payment: function() {
-        return (parseFloat((this.loanAmount.replace(/[^a-zA-Z0-9]/g, ''))) * this.I * (Math.pow(1 + this.I, this.N) / (Math.pow(1 + this.I, this.N) - 1))).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return (parseFloat(((this.loanAmount.toString()).replace(/[^a-zA-Z0-9]/g, ''))) * this.I * (Math.pow(1 + this.I, this.N) / (Math.pow(1 + this.I, this.N) - 1))).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
     }
   }
