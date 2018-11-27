@@ -43,7 +43,7 @@
             this.formattedValue = this.format + this.sliderValue;
           }
           // this.formattedValue = "$" + this.sliderValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          this.$emit('sliderChanged', this.sliderValue);
+          this.$emit('change', this.sliderValue, this.formattedValue);
         } else {
           if (this.sliderValue > 99999) {
             this.formattedValue = this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3, 6) + this.format;
@@ -55,15 +55,17 @@
             this.formattedValue = this.sliderValue + this.format;
           }
           // this.formattedValue = "$" + this.sliderValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          this.$emit('sliderChanged', this.sliderValue);
+          this.$emit('change', this.sliderValue, this.formattedValue);
         }
-        
       },
       formattedValue: function () {
         // Prevent format changes when greater than 100
-        if (this.sliderValue > 999) {
-          return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g, '');
-        }
+          if(this.format === '$') {
+            return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g, '')
+          } else {
+            return this.sliderValue = parseFloat(this.formattedValue)
+          }
+          
       }
     },
     methods: {
