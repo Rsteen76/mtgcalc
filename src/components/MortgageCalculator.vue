@@ -2,11 +2,11 @@
   <main class="shell">
     <section class="hero card">
       <div>
-        <p class="eyebrow">Mortgage scenario planner</p>
-        <h1>Fast payment math that still feels production-grade.</h1>
+        <p class="eyebrow">Mortgage payment calculator</p>
+        <h1>Compare mortgage payment scenarios without the noise.</h1>
         <p class="lede">
-          Compare conventional, FHA, VA, and USDA scenarios with adjustable purchase price, down payment,
-          rate, taxes, insurance, HOA, and loan term assumptions.
+          Run quick side-by-side thinking for conventional, FHA, VA, and USDA loans using purchase price,
+          down payment, rate, taxes, insurance, HOA, and term.
         </p>
       </div>
       <div class="hero-stat">
@@ -20,7 +20,7 @@
       <section class="card controls">
         <div class="section-heading">
           <h2>Scenario inputs</h2>
-          <p>Small enough to scan fast, rich enough to be useful.</p>
+          <p>Enter the deal terms and adjust the scenario.</p>
         </div>
 
         <div class="control-group">
@@ -94,7 +94,7 @@
       <aside class="card summary">
         <div class="section-heading">
           <h2>Payment summary</h2>
-          <p>Clean output and assumptions you can explain.</p>
+          <p>Monthly payment breakdown based on the current inputs.</p>
         </div>
 
         <div class="summary-list">
