@@ -1,141 +1,220 @@
 <template>
-  <!-- Create input group with label -->
-  <div class="form-group" style="width:auto;">
-    <label class="font-weight-bold" for="houseValue">{{label}}</label>
-    <div class="input-group input-group-lg mb-3 mx-auto" style="width:285px;">
-      <!-- Subtract from sliderValue -->
-      <div class="input-group-prepend">
-        <button v-on:click="subtractValue" class="btn btn-outline-secondary">-</button>
-      </div>
-      <input type="text" class="form-control" id="houseValue" v-model='formattedValue'>
-      <!-- Add to sliderValue -->
-      <div class="input-group-append">
-        <button v-on:click="addValue" class="btn btn-outline-secondary">+</button>
-      </div>
+  <div class="slide-bar">
+    <div class="slide-bar__header">
+      <label class="slide-bar__label" :for="inputId">{{ label }}</label>
+      <span class="slide-bar__value">{{ displayValue }}</span>
     </div>
-      <!-- Slider -->
-      <input type="range" :min="min" :max="max" :step="step" v-model="sliderValue" class="slider" id="myRange">
+
+    <div class="slide-bar__controls">
+      <button type="button" class="slide-bar__button" @click="adjustValue(-numericIncrement)">−</button>
+      <input
+        :id="inputId"
+        type="range"
+        class="slide-bar__range"
+        :min="numericMin"
+        :max="numericMax"
+        :step="numericStep"
+        :value="numericValue"
+        @input="onInput"
+      >
+      <button type="button" class="slide-bar__button" @click="adjustValue(numericIncrement)">+</button>
+    </div>
   </div>
 </template>
 
 <script>
-
-  export default {
-    props: ['label', 'min', 'max', 'step', 'increment','format'],
-    data: function () {
-      return {
-        sliderValue: this.min,
-        // inputValue: this.min,
-        formattedValue: ''
-      }
+export default {
+  props: {
+    label: {
+      type: String,
+      required: true,
     },
-    watch: {
-      sliderValue: function () {
-        // Don't format number if under 100
-        if(this.format == '$') {
-          if (this.sliderValue > 99999) {
-            this.formattedValue = this.format + this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3, 6);
-          } else if (this.sliderValue > 9999 && this.sliderValue < 99999) {
-            this.formattedValue = this.format + this.sliderValue.slice(0, 2) + "," + this.sliderValue.slice(2, 5);
-          } else if (this.sliderValue > 999 && this.sliderValue < 9999 ) {
-            this.formattedValue = this.format + this.sliderValue.slice(0, 1) + "," + this.sliderValue.slice(1, 4);
-          } else {
-            this.formattedValue = this.format + this.sliderValue;
-          }
-          // this.formattedValue = "$" + this.sliderValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          this.$emit('change', this.sliderValue, this.formattedValue);
-        } else {
-          if (this.sliderValue > 99999) {
-            this.formattedValue = this.sliderValue.slice(0, 3) + "," + this.sliderValue.slice(3, 6) + this.format;
-          } else if (this.sliderValue > 9999 && this.sliderValue < 99999) {
-            this.formattedValue = this.sliderValue.slice(0, 2) + "," + this.sliderValue.slice(2, 5) + this.format;
-          } else if (this.sliderValue > 999 && this.sliderValue < 9999 ) {
-            this.formattedValue = this.sliderValue.slice(0, 1) + "," + this.sliderValue.slice(1, 4) + this.format;
-          } else {
-            this.formattedValue = this.sliderValue + this.format;
-          }
-          // this.formattedValue = "$" + this.sliderValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          this.$emit('change', this.sliderValue, this.formattedValue);
-        }
-      },
-      formattedValue: function () {
-        // Prevent format changes when greater than 100
-          if(this.format === '$') {
-            return this.sliderValue = this.formattedValue.replace(/[^a-zA-Z0-9]/g, '')
-          } else {
-            return this.sliderValue = parseFloat(this.formattedValue)
-          }
-          
-      }
+    min: {
+      type: [Number, String],
+      required: true,
     },
-    methods: {
-      addValue: function () {
-        return this.sliderValue = (parseFloat(this.sliderValue) + parseFloat(this.increment)).toString();
-      },
-
-      subtractValue: function () {
-        return this.sliderValue = (parseFloat(this.sliderValue) - parseFloat(this.increment)).toString();
-      },
-      formatValue: function () {
-        if (this.format == '$') {
-        this.formattedValue = this.format + this.min
-      } else {
-        this.formattedValue = this.min + this.format
-      }
-      }
+    max: {
+      type: [Number, String],
+      required: true,
     },
-    mounted: function () {
-      this.formatValue()
+    step: {
+      type: [Number, String],
+      default: 1,
+    },
+    increment: {
+      type: [Number, String],
+      default: 1,
+    },
+    format: {
+      type: String,
+      default: '',
+    },
+    value: {
+      type: [Number, String],
+      default: null,
+    },
+  },
+  data() {
+    return {
+      localValue: this.initialValue,
     }
-  }
+  },
+  computed: {
+    inputId() {
+      return `slider-${this.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+    },
+    numericMin() {
+      return Number(this.min)
+    },
+    numericMax() {
+      return Number(this.max)
+    },
+    numericStep() {
+      return Number(this.step)
+    },
+    numericIncrement() {
+      return Number(this.increment)
+    },
+    initialValue() {
+      const incoming = this.value === null || this.value === undefined || this.value === ''
+        ? Number(this.min)
+        : Number(this.value)
+      return this.clamp(incoming)
+    },
+    numericValue() {
+      return this.clamp(Number(this.localValue))
+    },
+    displayValue() {
+      if (this.format === '$') {
+        return this.formatCurrency(this.numericValue)
+      }
+
+      if (this.format === '%') {
+        return `${this.numericValue}%`
+      }
+
+      return String(this.numericValue)
+    },
+  },
+  watch: {
+    value(nextValue) {
+      if (nextValue === null || nextValue === undefined || nextValue === '') {
+        return
+      }
+
+      this.localValue = this.clamp(Number(nextValue))
+    },
+  },
+  mounted() {
+    this.emitChange()
+  },
+  methods: {
+    clamp(value) {
+      if (Number.isNaN(value)) {
+        return this.numericMin
+      }
+
+      return Math.min(this.numericMax, Math.max(this.numericMin, value))
+    },
+    formatCurrency(value) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(value)
+    },
+    adjustValue(delta) {
+      this.localValue = this.clamp(Number(this.localValue) + delta)
+      this.emitChange()
+    },
+    onInput(event) {
+      this.localValue = this.clamp(Number(event.target.value))
+      this.emitChange()
+    },
+    emitChange() {
+      this.$emit('change', this.numericValue)
+    },
+  },
+}
 </script>
 
-<style>
-  h1{
-    font-family:'Arial';
-    text-align:center;
-  }
+<style scoped>
+.slide-bar {
+  background: #ffffff;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
 
-  /* The slider itself */
-  .slider {
-      -webkit-appearance: none;  /*Override default CSS styles */
-      width: 80%;
-      height: 20px; /* Specified height */
-      background: #d3d3d3; /* Grey background */
-      outline: none;
-      border-style: solid;
-      border-color: black;
-      border-radius: 5px;
-      opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-      -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-      transition: opacity .2s;
-  }
+.slide-bar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
 
-  /* Mouse-over effects */
-  .slider:hover {
-      opacity: 1; /* Fully shown on mouse-over */
-  }
+.slide-bar__label {
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
 
-  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
-  .slider::-webkit-slider-thumb {
-      -webkit-appearance: none; /* Override default look */
-      width: 25px; /* Set a specific slider handle width */
-      height: 50px; /* Slider handle height */
-      background: #4CAF50; /* Green background */
-      cursor: pointer; /* Cursor on hover */
-      border-radius: 10px;
-  }
+.slide-bar__value {
+  font-weight: 600;
+  color: #2563eb;
+}
 
-  .slider::-moz-range-thumb {
-      width: 25px; /* Set a specific slider handle width */
-      height: 50px; /* Slider handle height */
-      background: #4CAF50; /* Green background */
-      cursor: pointer; /* Cursor on hover */
-  }
-  #houseValue{
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-  }
+.slide-bar__controls {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 12px;
+  align-items: center;
+}
+
+.slide-bar__button {
+  height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.slide-bar__button:hover {
+  background: #eef2ff;
+}
+
+.slide-bar__range {
+  width: 100%;
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  outline: none;
+}
+
+.slide-bar__range::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #0f172a;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+}
+
+.slide-bar__range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #0f172a;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+}
 </style>
-

@@ -1,31 +1,35 @@
 <template>
   <div id="app">
-    <mtg-calc></mtg-calc>
-    
+    <MtgCalc />
   </div>
 </template>
 
 <script>
-import VueSlideBar from './components/VueSlideBar.vue'
 import MtgCalc from './components/MtgCalc.vue'
 
-
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     MtgCalc,
-    VueSlideBar,
-  }
+  },
 }
 </script>
 
 <style>
+body {
+  margin: 0;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 15px;
+  color: #1f2937;
+  padding: 24px 16px 48px;
 }
 </style>
